@@ -1,0 +1,36 @@
+{
+  "name": "chai-to-assert",
+  "version": "0.0.0",
+  "description": "\"Convert Chai.js(BDD) API based tests to Assertive(TDD) API tests for older browsers IE8\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vikikamath/chai-to-assert"
+  },
+  "keywords": [
+    "chai.js",
+    "BDD",
+    "TDD",
+    "assertive",
+    "tests"
+  ],
+  "author": "Vikram Kamath",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vikikamath/chai-to-assert/issues"
+  },
+  "homepage": "https://github.com/vikikamath/chai-to-assert",
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "mocha-lcov-reporter": "0.0.1",
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.5"
+  },
+  "dependencies": {
+    "esprima": "^1.2.2"
+  }
+}
