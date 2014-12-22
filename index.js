@@ -41,5 +41,5 @@ function traverse(obj, acc){
 }
 
 module.exports = function(obj){
-	return traverse(obj, []);
+	return (traverse(obj, [';']).join(''));
 };
