@@ -9,7 +9,9 @@ function t(o){
 			a.push(',');
 		});
 		// remove the trailing comma from arguments, objects or array items.
-		a.pop();
+		if (a[a.length - 1] === ','){
+			a.pop();
+		}
 	} else if (o && typeof o === 'object'){
 		if (o.type === 'Literal'){
 			a.push(o.raw);
@@ -34,8 +36,38 @@ function t(o){
 			a.push(')');
 		} else if (o.type === 'MemberExpression'){
 			t(o.object);
-			a.push('.');
+
+			if (o.property.type === 'Literal'){ // handles bracket notation
+				a.push("[");
+			} else { // and dot notation
+				a.push('.');
+			}
 			t(o.property);
+
+			if (o.property.type === 'Literal') {
+				a.push("]");
+			}
+		} else if (o.type === 'ReturnStatement'){
+			a.push('return ');
+			t(o.argument);
+			a.push(';');
+		} else if (o.type === 'BlockStatement'){
+			t(o.body);
+		} else if (o.type === 'ExpressionStatement'){
+			t(o.expression);
+			a.push(';');
+		}else if (o.type === 'FunctionExpression'){
+			a.push('function ');
+			if (o.id && o.id !== null){
+				a.push(o.id);
+			}
+			a.push('(');
+			if (o.params.length){
+				t(o.params);
+			}
+			a.push('){');
+			t(o.body);
+			a.push('}');
 		}
 
 	}
@@ -44,6 +76,6 @@ function t(o){
 module.exports = function(obj){
 	a = new Array();
 	t(obj);
-	a.push(';');
+	// a.push(';');
 	return a.join('');
 };
