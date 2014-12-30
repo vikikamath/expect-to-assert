@@ -1,45 +1,49 @@
 'use strict';
 
-function processArray(arr, acc){
-	return arr.reduceRight(function(prev, curr){
-		if (prev) {
-			prev.unshift(',');
-		}
-		return traverse(curr, acc);
-	}, []);
-}
+var a;
 
-function traverse(obj, acc){
-	if(obj.type === 'MemberExpression'){
-		acc.unshift('.' + obj.property.name);
-		return traverse(obj.object, acc);
-	}else if(obj.type === 'Identifier'){
-		acc.unshift(obj.name);
-		return acc;
-	}else if(obj.type === 'Literal'){
-		acc.unshift(obj.raw);
-		return acc;
-	}else if(obj.type === 'CallExpression'){
-		acc.unshift(')');
-		acc.unshift(processArray(obj.arguments, acc));
-		acc.unshift('(');
-		return traverse(obj.callee, acc);
-	}else if(obj.type === 'ArrayExpression'){
-		acc.unshift(']');
-		acc.unshift(processArray(obj.elements, acc));
-		acc.unshift('[');
-	}else if(obj.type == 'ObjectExpression'){
-		acc.unshift('}');
-		acc.unshift(processArray(obj.properties, acc));
-		acc.unshift('{');
-	}else if(obj.type === 'Property'){
-		acc.unshift(traverse(obj.value, acc));
-		acc.unshift(':');
-		acc.unshift(traverse(obj.key, acc));
-		return acc;
+function t(o){
+	if (Array.isArray(o)){
+		o.forEach(function(i){
+			t(i);
+			a.push(',');
+		});
+		// remove the trailing comma from arguments, objects or array items.
+		a.pop();
+	} else if (o && typeof o === 'object'){
+		if (o.type === 'Literal'){
+			a.push(o.raw);
+		} else if (o.type === 'Identifier'){
+			a.push(o.name);
+		} else if (o.type === 'Property'){
+			t(o.key);
+			a.push(':');
+			t(o.value);
+		} else if (o.type === 'ObjectExpression'){
+			a.push('{');
+			t(o.properties);
+			a.push('}');
+		} else if (o.type === 'ArrayExpression'){
+			a.push('[');
+			t(o.elements);
+			a.push(']');
+		} else if (o.type === 'CallExpression'){
+			t(o.callee);
+			a.push('(');
+			t(o.arguments);
+			a.push(')');
+		} else if (o.type === 'MemberExpression'){
+			t(o.object);
+			a.push('.');
+			t(o.property);
+		}
+
 	}
 }
 
 module.exports = function(obj){
-	return (traverse(obj, [';']).join(''));
+	a = new Array();
+	t(obj);
+	a.push(';');
+	return a.join('');
 };

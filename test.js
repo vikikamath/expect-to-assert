@@ -76,11 +76,11 @@ describe("Validating traverse() correctly re-generates Expect API expressions fr
 	});
 
 	it("Deeply nested objects", function() {
-		assertifySingleLineOfCode("expect({ two: { plus: { two: { is: four}}}}).to.have.property(two).that.is.an('object').that.deep.equals({ plus: { two: { is: four}}})")
+		assertifySingleLineOfCode("expect({ two: { plus: { two: { is: four}}}}).to.have.property(two).that.is.an('object').that.deep.equals({ plus: { two: { is: four}}});")
 	});
 
 	it("Deeply nested mix", function() {
-		assertifySingleLineOfCode("expect([[ 'chai', 'matcha', 'konacha' ], [ { tea: 'chai' }, { tea: 'matcha' }, { tea: 'konacha' } ]]).to.have.deep.property('[0][1]', 'matcha')");
+		assertifySingleLineOfCode("expect([[ 'chai', 'matcha', 'konacha' ], [ { tea: 'chai' }, { tea: 'matcha' }, { tea: 'konacha' } ]]).to.have.deep.property('[0][1]', 'matcha');");
 	});
 
 	it("Multiple Expect API lines", function() {
