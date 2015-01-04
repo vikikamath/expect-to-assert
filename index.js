@@ -1,12 +1,13 @@
 'use strict';
 
+var parse = require('esprima').parse;
 var a;
 
-function t(o){
+function t(o, marker){
 	if (Array.isArray(o)){
 		o.forEach(function(i){
 			t(i);
-			a.push(',');
+			marker && marker === 'body' ? undefined : a.push(',');
 		});
 		// remove the trailing comma from arguments, objects or array items.
 		if (a[a.length - 1] === ','){
@@ -43,7 +44,6 @@ function t(o){
 				a.push('.');
 			}
 			t(o.property);
-
 			if (o.property.type === 'Literal') {
 				a.push("]");
 			}
@@ -52,11 +52,28 @@ function t(o){
 			t(o.argument);
 			a.push(';');
 		} else if (o.type === 'BlockStatement'){
-			t(o.body);
+			t(o.body, 'body');
 		} else if (o.type === 'ExpressionStatement'){
 			t(o.expression);
 			a.push(';');
-		}else if (o.type === 'FunctionExpression'){
+		} else if (o.type === 'AssignmentExpression'){
+			t(o.left);
+			a.push(o.operator);
+			t(o.right);
+		} else if (o.type === 'Program'){
+			t(o.body, 'body'); // treat 'body' array 'special'
+		} else if (o.type === 'VariableDeclaration'){
+			a.push(o.kind);
+			t(o.declarations);
+			a.push(';'); // end of variable declarations
+		} else if (o.type === 'VariableDeclarator'){
+			t(o.id);
+			// handles var xyz = <expression> [,|;]
+			if (o.init !== null){
+				a.push(' = ');
+				t(o.init);
+			} // otherwise var xyz;
+		} else if (o.type === 'FunctionExpression'){
 			a.push('function ');
 			if (o.id && o.id !== null){
 				a.push(o.id);
@@ -66,6 +83,7 @@ function t(o){
 				t(o.params);
 			}
 			a.push('){');
+			// within a Function Expression, body is object not array
 			t(o.body);
 			a.push('}');
 		}
@@ -73,9 +91,8 @@ function t(o){
 	}
 }
 
-module.exports = function(obj){
+module.exports = function(str){
 	a = new Array();
-	t(obj);
-	// a.push(';');
+	t(parse(str));
 	return a.join('');
 };

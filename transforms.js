@@ -1,13 +1,11 @@
 'use strict';
 
-var slice = Array.slice? Array.slice: Array.prototype.slice;
-
 function toLocaleLowerCase() {
-	return arguments[0].toLocaleLowerCase();
+	return arguments[0].toString().toLocaleLowerCase();
 }
 
 function removeExtraWhiteSpaces() {
-	return arguments[0].replace(/\s+/g, '');
+	return arguments[0].toString().replace(/\s+/g, '');
 }
 
 module.exports = {
