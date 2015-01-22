@@ -56,6 +56,14 @@ function t(o, marker){
 		} else if (o.type === 'ExpressionStatement'){
 			t(o.expression);
 			a.push(';');
+		} else if (o.type === 'NewExpression'){
+			a.push('new ');
+			t(o.callee);
+			if (o.arguments.length) {
+				a.push('(');
+				t(o.arguments);
+				a.push(')');
+			}
 		} else if (o.type === 'AssignmentExpression'){
 			t(o.left);
 			a.push(o.operator);

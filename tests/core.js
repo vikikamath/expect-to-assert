@@ -105,6 +105,14 @@ describe("Validating traverse() correctly re-generates Expect API expressions fr
 		assertify(new Buffer("setTimeout(function(){return expect(function() {return Bacon.retry({source: \"ugh\"});})[\"to\"][\"throw\"](\"'source' option has to be a function\");},3000);",'utf8'));
 	});
 
+	it("parses New expressions", function() {
+		assertify(new Buffer("setTimeout(function(){expect('x').to.be.ok;return setTimeout(function(){expect('a').to.be.ok;return new function(){expect('function').to.be.equal('function');return setTimeout(function(){}, 1000);};}, 2000);}, 3000);"), 'utf8');
+	});
+
+	it("parses New expressions with arguments", function() {
+		assertify(new Buffer("setTimeout(function(){ return new function(x){ console.log(x);}(10);}, 3000);", 'utf8'));
+	});
+
 	it("Deeply Nested functions", function() {
 		assertify("expect(setTimeout(function(){setTimeout(function(){}, 3000);}, 2000)).to.be.a[\"function\"];");
 	});
